@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Collège</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 2rem;
+        }
+        .question-block {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+
+        }
+        .question-title {
+            font-weight: bold;
+        }
+        button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        font-size: 1.2rem;
+        border-radius: 8px;
+        cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz collège</h1>
+    <form action="{{ url_for('quiz') }}" method="post">
+        {% for q in questions %}
+            {% set i = loop.index0 %}
+            <fieldset>
+                <legend>{{ i + 1 }}. {{ q.question }}</legend>
+                {% for option in q.options %}
+                    <label>
+                        <input type="radio" name="q{{ i }}" value="{{ option }}" required>
+                        {{ option }}
+                    </label><br>
+                {% endfor %}
+            </fieldset>
+            <br>
+        {% endfor %}
+        <button type="submit">Valider mes réponses</button>
+    </form>
+
+    <!-- Le script du compte à rebours -->
+    <script>
+        const totalTime = {{ questions|length }} * 20;
+        let timeLeft = totalTime;
+
+        const timerDisplay = document.createElement('div');
+        timerDisplay.style.position = 'fixed';
+        timerDisplay.style.top = '10px';
+        timerDisplay.style.right = '10px';
+        timerDisplay.style.background = '#ff4444';
+        timerDisplay.style.color = 'white';
+        timerDisplay.style.padding = '10px 15px';
+        timerDisplay.style.borderRadius = '8px';
+        timerDisplay.style.fontSize = '1.2rem';
+        timerDisplay.style.fontWeight = 'bold';
+        timerDisplay.innerText = `Temps restant : ${timeLeft} sec`;
+        document.body.appendChild(timerDisplay);
+
+        const interval = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                timerDisplay.innerText = `Temps restant : ${timeLeft} sec`;
+            } else {
+                clearInterval(interval);
+                timerDisplay.innerText = '⏰ Temps écoulé !';
+                timerDisplay.style.background = '#000';
+                timerDisplay.style.fontSize = '1.4rem';
+                setTimeout(() => {
+                    document.querySelector('form').submit();
+                }, 2000);
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8" />
+    <title>Résultats du Quiz</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 2rem;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .correction {
+            margin-bottom: 2rem;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+        button {
+            display: inline-block;
+            margin-top: 20px;
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+        button:hover {
+            background-color: white;
+            color: #0056b3;
+            box-shadow: 3px 3px 10px #0056b3;
+
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Résultat du Quiz</h1>
+    <h2>Note : {{ score }}/20 ({{ bonnes }} bonnes réponses sur {{ total }})</h2>
+    {% for result in corrections %}
+    <div class="correction">
+        <p><strong>{{ result.question }}</strong></p>
+        <p>Ta réponse : 
+            {% if result.is_correct %}
+            <span class="correct">{{ result.user_answer }}</span>
+            {% else %}
+            <span class="incorrect">{{ result.user_answer }}</span>
+            <br>Bonne réponse : <span class="correct">{{ result.correct_answer }}</span>
+            {% endif %}
+        </p>
+    </div>
+    {% endfor %}
+    
+    <form action="mailto:chtidad@gmail.com" method="GET" enctype="text/plain" style="margin-top: 10px;">
+        <input type="hidden" name="subject" value="Score du Quiz Collège">
+        <textarea name="body" style="display:none;">
+        Score du quiz : {{ score }}/20
+        Réponses correctes : {{ bonnes }} sur {{ total }}
+
+        Détails :
+        {% for c in corrections %}
+        - Question : {{ c.question }}
+        Ta réponse : {{ c.user_answer }}
+        Bonne réponse : {{ c.correct_answer }}
+        {% if c.is_correct %}✔️ Correct{% else %}❌ À revoir{% endif %}
+        {% endfor %}
+        </textarea>
+        <button type="submit">📧 Envoie ton score</button>
+    </form>
+
+    <form action="{{ url_for('accueil') }}" method="get" style="margin-top: 20px;">
+        <button type="submit">🏠 Recommence le quiz</button>
+    </form>
+
+</body>
+</html>
